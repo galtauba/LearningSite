@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#081421" />
+    <title id="site-title">CyberLearn | למידה חכמה</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Rubik:wght@500;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <div class="background-glow glow-one"></div>
+    <div class="background-glow glow-two"></div>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#/" id="brand-home" aria-label="דף הבית של CyberLearn">
+          <span class="brand-mark">&lt;/&gt;</span>
+          <span id="brand-name">Cyber<span>Learn</span></span>
+        </a>
+        <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false" id="menu-label">תכנים ☰</button>
+        <p class="topbar-note" id="tagline">הנדסת תוכנה וסייבר · לומדים, מתרגלים, מבינים</p>
+        <button class="theme-toggle" type="button" id="theme-toggle" aria-pressed="false">☀ מצב בהיר</button>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar" id="sidebar">
+          <div class="sidebar-heading">
+            <p id="learning-path-label">מסלול הלמידה</p>
+            <small id="page-count">טוען תכנים…</small>
+          </div>
+          <nav id="navigation" aria-label="ניווט בתכני הלמידה"></nav>
+        </aside>
+
+        <main id="content" class="content" tabindex="-1" aria-live="polite"></main>
+      </div>
+    </div>
+    <script type="module" src="assets/app.js"></script>
+  </body>
+</html>
