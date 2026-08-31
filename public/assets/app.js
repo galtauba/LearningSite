@@ -7,7 +7,7 @@ const themeToggle = document.querySelector('#theme-toggle');
 
 let pages = [];
 const defaultTexts = {
-  site_title: 'CyberLearn | למידה חכמה', brand_prefix: 'Cyber', brand_accent: 'Learn', brand_home_label: 'דף הבית של CyberLearn',
+  site_title: 'LearningSite | למידה חכמה', brand_prefix: 'Learning', brand_accent: 'Site', brand_home_label: 'דף הבית של LearningSite',
   tagline: 'הנדסת תוכנה וסייבר · לומדים, מתרגלים, מבינים', menu_label: 'תכנים ☰', theme_light_label: '☀ מצב בהיר', theme_dark_label: '🌙 מצב כהה', learning_path_label: 'מסלול הלמידה', navigation_label: 'ניווט בתכני הלמידה', loading_content: 'טוען תכנים…',
   page_count: '{count} עמודים זמינים', empty_title: 'עוד אין תכנים', empty_description: 'צרו את העמוד הראשון דרך תוכנת העורך. היא תעדכן את האינדקס אוטומטית.',
   loading_page: 'טוען את השיעור…', load_error_title: 'לא הצלחנו לטעון את העמוד', load_error_description: 'ודאו שהקובץ {file} קיים, ושהאתר מופעל דרך שרת מקומי.',
