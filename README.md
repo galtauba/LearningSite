@@ -1,6 +1,6 @@
-# CyberLearn — אתר סטטי + עורך תוכן
+# LearningSite — אתר סטטי + עורך תוכן
 
-CyberLearn היא מערכת ליצירה וניהול של אתר לימודי סטטי באמצעות עורך תוכן מקומי.
+LearningSite היא מערכת ליצירה וניהול של אתר לימודי סטטי באמצעות עורך תוכן מקומי.
 
 הפרויקט מחולק לשני אזורים:
 
@@ -17,18 +17,18 @@ Learning site/
 
 העורך המקומי משנה את תוכן האתר שבתיקייה `public/`.
 
-כל משתמש יכול ליצור עותק משלו של CyberLearn ב-GitHub, להוסיף אליו את התוכן שלו ולפרסם את תיקיית `public/` כאתר עצמאי.
+כל משתמש יכול ליצור עותק משלו של LearningSite ב-GitHub, להוסיף אליו את התוכן שלו ולפרסם את תיקיית `public/` כאתר עצמאי.
 
 ---
 
 ## יצירת אתר משלכם באמצעות הפרויקט
 
-הדרך המומלצת להשתמש ב-CyberLearn היא ליצור **Fork** של ה-Repository.
+הדרך המומלצת להשתמש ב-LearningSite היא ליצור **Fork** של ה-Repository.
 
 כך לכל משתמש יש Repository עצמאי משלו:
 
 ```text
-CyberLearn המקורי
+LearningSite המקורי
         │
         │ Fork
         ▼
@@ -42,11 +42,11 @@ Repository משלכם
         Cloudflare Pages
 ```
 
-ה-Repository שלכם יכיל עותק מלא של CyberLearn, אבל השיעורים, התמונות והגדרות האתר שתיצרו יהיו שייכים לאתר שלכם.
+ה-Repository שלכם יכיל עותק מלא של LearningSite, אבל השיעורים, התמונות והגדרות האתר שתיצרו יהיו שייכים לאתר שלכם.
 
 ### 1. יצירת Fork
 
-בעמוד ה-GitHub של CyberLearn לחצו על:
+בעמוד ה-GitHub של LearningSite לחצו על:
 
 **Fork**
 
@@ -57,11 +57,11 @@ GitHub ייצור בחשבון שלכם Repository חדש המבוסס על הפ
 ```text
 הפרויקט המקורי:
 
-github.com/ORIGINAL-OWNER/CyberLearn
+github.com/ORIGINAL-OWNER/LearningSite
 
 העותק שלכם:
 
-github.com/YOUR-USERNAME/CyberLearn
+github.com/YOUR-USERNAME/LearningSite
 ```
 
 אפשר גם לתת ל-Repository שלכם שם אחר שמתאים לאתר.
@@ -222,7 +222,7 @@ git push
 הזרימה היא:
 
 ```text
-CyberLearn Editor
+LearningSite Editor
         │
         │ יצירה / עריכה
         ▼
@@ -243,11 +243,11 @@ Cloudflare Pages
 
 ---
 
-# קבלת עדכונים מ-CyberLearn
+# קבלת עדכונים מ-LearningSite
 
 אחד היתרונות בשימוש ב-Fork הוא שאפשר להמשיך לעבוד על האתר שלכם ובמקביל לקבל בעתיד תיקונים ושיפורים מהפרויקט המקורי.
 
-לדוגמה, ייתכן שגרסה חדשה של CyberLearn תכלול:
+לדוגמה, ייתכן שגרסה חדשה של LearningSite תכלול:
 
 ```text
 main.py                  ← שיפורים בעורך
@@ -272,7 +272,7 @@ public/assets/images/
 בצעו פעם אחת:
 
 ```powershell
-git remote add upstream https://github.com/ORIGINAL-OWNER/CyberLearn.git
+git remote add upstream https://github.com/ORIGINAL-OWNER/LearningSite.git
 ```
 
 החליפו את הכתובת בכתובת האמיתית של ה-Repository המקורי.
@@ -287,7 +287,7 @@ git remote -v
 
 ```text
 origin    → ה-Repository שלכם
-upstream  → CyberLearn המקורי
+upstream  → LearningSite המקורי
 ```
 
 כלומר:
@@ -299,12 +299,12 @@ origin
 
 upstream
   │
-  └── CyberLearn המקורי
+  └── LearningSite המקורי
 ```
 
 ---
 
-## קבלת גרסה חדשה של CyberLearn
+## קבלת גרסה חדשה של LearningSite
 
 כאשר מתפרסם עדכון בפרויקט המקורי, משכו אותו באמצעות:
 
@@ -324,12 +324,12 @@ git merge upstream/main
 git push origin main
 ```
 
-כעת האתר שלכם מכיל גם את התוכן שלכם וגם את הגרסה המעודכנת של CyberLearn.
+כעת האתר שלכם מכיל גם את התוכן שלכם וגם את הגרסה המעודכנת של LearningSite.
 
 הזרימה היא:
 
 ```text
-CyberLearn המקורי
+LearningSite המקורי
         │
         │ עדכון
         ▼
@@ -353,7 +353,7 @@ Cloudflare Pages
 
 ## מה שייך לפרויקט ומה שייך לאתר שלכם?
 
-באופן כללי, קובצי המערכת מתעדכנים על ידי CyberLearn:
+באופן כללי, קובצי המערכת מתעדכנים על ידי LearningSite:
 
 ```text
 main.py
@@ -384,7 +384,7 @@ Git בדרך כלל מסוגל לשלב את העדכונים באופן אוט�
 
 במקרה כזה יש לבדוק את הקובץ שבו נוצרה ההתנגשות, לבחור אילו שינויים לשמור, ולאחר מכן לבצע Commit.
 
-ככלל, CyberLearn משתדל להפריד בין קובצי המערכת לבין התוכן האישי של האתר, ולכן עבודה רגילה בתוך:
+ככלל, LearningSite משתדל להפריד בין קובצי המערכת לבין התוכן האישי של האתר, ולכן עבודה רגילה בתוך:
 
 ```text
 public/content/
@@ -396,10 +396,10 @@ public/content/
 
 # סיכום
 
-כדי ליצור אתר משלכם באמצעות CyberLearn:
+כדי ליצור אתר משלכם באמצעות LearningSite:
 
 ```text
-1. Fork ל-CyberLearn
+1. Fork ל-LearningSite
         ↓
 2. Clone של ה-Fork למחשב
         ↓
@@ -416,7 +416,7 @@ public/content/
 8. האתר באוויר
 ```
 
-ובהמשך, כדי לקבל עדכונים מ-CyberLearn:
+ובהמשך, כדי לקבל עדכונים מ-LearningSite:
 
 ```text
 git fetch upstream
@@ -424,4 +424,4 @@ git merge upstream/main
 git push origin main
 ```
 
-כך לכל משתמש יש אתר עצמאי משלו, תוכן עצמאי ו-Repository משלו, אבל הוא עדיין יכול ליהנות מתיקונים ושיפורים שמתפרסמים בפרויקט CyberLearn המקורי.
+כך לכל משתמש יש אתר עצמאי משלו, תוכן עצמאי ו-Repository משלו, אבל הוא עדיין יכול ליהנות מתיקונים ושיפורים שמתפרסמים בפרויקט LearningSite המקורי.
