@@ -572,6 +572,13 @@ class CyberLearnEditor(QMainWindow):
                 "background_color": current.get("background_color") or "#081421",
                 "theme_color": current.get("theme_color") or "#081421",
             })
+            icon_types = {".svg": "image/svg+xml", ".png": "image/png", ".ico": "image/x-icon"}
+            assets_dir = self.project / "public" / "assets"
+            for suffix, mime_type in icon_types.items():
+                icon = assets_dir / f"favicon{suffix}"
+                if icon.exists():
+                    current["icons"] = [{"src": f"assets/{icon.name}", "sizes": "any", "type": mime_type}]
+                    break
             temporary = self.manifest_path.with_suffix(".tmp")
             temporary.write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             temporary.replace(self.manifest_path)
