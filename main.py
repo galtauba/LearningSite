@@ -110,7 +110,7 @@ class CyberLearnEditor(QMainWindow):
         self.editor_heading = QLabel("עורך התוכן")
         self.editor_heading.setStyleSheet(f"font-size:{round(self.editor_font_size * 1.65)}px;font-weight:800;color:#f4fbff")
         title_box.addWidget(self.editor_heading); header_layout.addLayout(title_box); header_layout.addStretch()
-        saved_hint = QLabel("כל שמירה מעדכנת את האתר והחיפוש"); saved_hint.setObjectName("muted"); header_layout.addWidget(saved_hint)
+        saved_hint = QLabel("כל שמירה מעדכנת את האתר והחיפוש1"); saved_hint.setObjectName("muted"); header_layout.addWidget(saved_hint)
         font_label = QLabel("טקסט"); font_label.setObjectName("muted"); header_layout.addWidget(font_label)
         self.editor_font_size_control = QSpinBox(); self.editor_font_size_control.setRange(10, 28); self.editor_font_size_control.setSuffix(" px"); self.editor_font_size_control.setValue(self.editor_font_size); self.editor_font_size_control.setToolTip("גודל כל הטקסטים בעורך"); self.editor_font_size_control.valueChanged.connect(self.set_editor_font_size); header_layout.addWidget(self.editor_font_size_control)
         self.local_site_button = QPushButton("▶ תצוגת אתר"); self.local_site_button.setObjectName("subtle"); self.local_site_button.clicked.connect(self.toggle_local_site); header_layout.addWidget(self.local_site_button)
