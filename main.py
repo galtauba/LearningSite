@@ -74,6 +74,8 @@ class CyberLearnEditor(QMainWindow):
         self._loading_document = False
         self._local_server: subprocess.Popen | None = None
         self._local_server_port: int | None = None
+        self._local_site_attempt = 0
+        self._local_site_errors: list[str] = []
         self.editor_font_size = self.read_editor_font_size()
         self.content_dir.mkdir(parents=True, exist_ok=True)
         self.images_dir.mkdir(parents=True, exist_ok=True)
@@ -898,24 +900,58 @@ class CyberLearnEditor(QMainWindow):
         if self._local_server and self._local_server.poll() is None:
             return
 
+        self._local_site_attempt = 0
+        self._local_site_errors = []
+        self.start_local_site_attempt()
+
+    def start_local_site_attempt(self) -> None:
+        """Start one server attempt, retrying if another process takes its port."""
+        self._local_site_attempt += 1
+
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
             probe.bind(("127.0.0.1", 0))
             port = probe.getsockname()[1]
         command = [sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1", "--directory", str(self.project / "public")]
-        process_options = {"cwd": str(self.project), "stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
+        process_options = {
+            "cwd": str(self.project),
+            "stdout": subprocess.DEVNULL,
+            "stderr": subprocess.PIPE,
+            "text": True,
+            "encoding": "utf-8",
+            "errors": "replace",
+        }
         if sys.platform == "win32":
             process_options["creationflags"] = subprocess.CREATE_NO_WINDOW
         try:
             self._local_server = subprocess.Popen(command, **process_options)
         except OSError as error:
-            self.set_local_site_button_state(False)
-            QMessageBox.critical(self, "אתר מקומי", f"לא ניתן להפעיל את השרת המקומי:\n{error}")
+            self._local_site_errors.append(str(error))
+            self.retry_or_report_local_site_failure()
             return
 
         self._local_server_port = port
-        self.set_local_site_button_state(True)
-        self.statusBar().showMessage(f"האתר המקומי הופעל בכתובת http://127.0.0.1:{port}")
-        QTimer.singleShot(250, self.open_local_site)
+        QTimer.singleShot(350, self.verify_local_site_start)
+
+    def verify_local_site_start(self) -> None:
+        if self._local_server and self._local_server.poll() is None and self._local_server_port:
+            self.set_local_site_button_state(True)
+            self.statusBar().showMessage(f"האתר המקומי הופעל בכתובת http://127.0.0.1:{self._local_server_port}")
+            self.open_local_site()
+            return
+
+        if self._local_server and self._local_server.stderr:
+            self._local_site_errors.append(self._local_server.stderr.read().strip())
+        self._local_server = None
+        self._local_server_port = None
+        self.retry_or_report_local_site_failure()
+
+    def retry_or_report_local_site_failure(self) -> None:
+        if self._local_site_attempt < 5:
+            self.start_local_site_attempt()
+            return
+        self.set_local_site_button_state(False)
+        details = "\n\n".join(error for error in self._local_site_errors if error) or "לא התקבל פירוט שגיאה מהשרת."
+        QMessageBox.critical(self, "אתר מקומי", f"לא ניתן להפעיל את השרת המקומי לאחר 5 ניסיונות.\n\nפרטי השגיאה:\n{details}")
 
     def open_local_site(self) -> None:
         if not self._local_server or self._local_server.poll() is not None or not self._local_server_port:
