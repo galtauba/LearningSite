@@ -7,9 +7,10 @@ from __future__ import annotations
 import json
 import re
 import shutil
-import socket
-import subprocess
 import sys
+import threading
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import quote
 
@@ -56,6 +57,12 @@ SITE_TEXT_DEFAULTS = {
 }
 
 
+class LocalSiteRequestHandler(SimpleHTTPRequestHandler):
+    """Serve the local preview without writing request logs to the editor console."""
+    def log_message(self, _format: str, *_args) -> None:
+        return
+
+
 class CyberLearnEditor(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
@@ -72,10 +79,9 @@ class CyberLearnEditor(QMainWindow):
         self.repository = ContentRepository(self.project)
         self._clean_snapshot = ""
         self._loading_document = False
-        self._local_server: subprocess.Popen | None = None
+        self._local_server: ThreadingHTTPServer | None = None
+        self._local_server_thread: threading.Thread | None = None
         self._local_server_port: int | None = None
-        self._local_site_attempt = 0
-        self._local_site_errors: list[str] = []
         self.editor_font_size = self.read_editor_font_size()
         self.content_dir.mkdir(parents=True, exist_ok=True)
         self.images_dir.mkdir(parents=True, exist_ok=True)
@@ -890,87 +896,47 @@ class CyberLearnEditor(QMainWindow):
         self.local_site_button.setText(label)
 
     def toggle_local_site(self) -> None:
-        if self._local_server and self._local_server.poll() is None:
+        if self._local_server:
             self.stop_local_site()
         else:
             self.start_local_site()
 
     def start_local_site(self) -> None:
-        """Serve the actual static site locally and open it in the default browser."""
-        if self._local_server and self._local_server.poll() is None:
+        """Serve the static site in-process, including when launched by LearningSiteLauncher."""
+        if self._local_server:
             return
-
-        self._local_site_attempt = 0
-        self._local_site_errors = []
-        self.start_local_site_attempt()
-
-    def start_local_site_attempt(self) -> None:
-        """Start one server attempt, retrying if another process takes its port."""
-        self._local_site_attempt += 1
-
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-            probe.bind(("127.0.0.1", 0))
-            port = probe.getsockname()[1]
-        command = [sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1", "--directory", str(self.project / "public")]
-        process_options = {
-            "cwd": str(self.project),
-            "stdout": subprocess.DEVNULL,
-            "stderr": subprocess.PIPE,
-            "text": True,
-            "encoding": "utf-8",
-            "errors": "replace",
-        }
-        if sys.platform == "win32":
-            process_options["creationflags"] = subprocess.CREATE_NO_WINDOW
         try:
-            self._local_server = subprocess.Popen(command, **process_options)
+            handler = partial(LocalSiteRequestHandler, directory=str(self.project / "public"))
+            self._local_server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
         except OSError as error:
-            self._local_site_errors.append(str(error))
-            self.retry_or_report_local_site_failure()
+            QMessageBox.critical(self, "אתר מקומי", f"לא ניתן להפעיל את השרת המקומי:\n{error}")
             return
-
-        self._local_server_port = port
-        QTimer.singleShot(350, self.verify_local_site_start)
-
-    def verify_local_site_start(self) -> None:
-        if self._local_server and self._local_server.poll() is None and self._local_server_port:
-            self.set_local_site_button_state(True)
-            self.statusBar().showMessage(f"האתר המקומי הופעל בכתובת http://127.0.0.1:{self._local_server_port}")
-            self.open_local_site()
-            return
-
-        if self._local_server and self._local_server.stderr:
-            self._local_site_errors.append(self._local_server.stderr.read().strip())
-        self._local_server = None
-        self._local_server_port = None
-        self.retry_or_report_local_site_failure()
-
-    def retry_or_report_local_site_failure(self) -> None:
-        if self._local_site_attempt < 5:
-            self.start_local_site_attempt()
-            return
-        self.set_local_site_button_state(False)
-        details = "\n\n".join(error for error in self._local_site_errors if error) or "לא התקבל פירוט שגיאה מהשרת."
-        QMessageBox.critical(self, "אתר מקומי", f"לא ניתן להפעיל את השרת המקומי לאחר 5 ניסיונות.\n\nפרטי השגיאה:\n{details}")
+        self._local_server.daemon_threads = True
+        self._local_server_port = self._local_server.server_address[1]
+        self._local_server_thread = threading.Thread(target=self._local_server.serve_forever, daemon=True)
+        self._local_server_thread.start()
+        self.set_local_site_button_state(True)
+        self.statusBar().showMessage(f"האתר המקומי הופעל בכתובת http://127.0.0.1:{self._local_server_port}")
+        QTimer.singleShot(100, self.open_local_site)
 
     def open_local_site(self) -> None:
-        if not self._local_server or self._local_server.poll() is not None or not self._local_server_port:
+        if not self._local_server or not self._local_server_port:
+            self.set_local_site_button_state(False)
             self._local_server = None
             self._local_server_port = None
-            self.set_local_site_button_state(False)
             QMessageBox.warning(self, "אתר מקומי", "השרת המקומי לא הופעל. נסו שוב.")
             return
         QDesktopServices.openUrl(QUrl(f"http://127.0.0.1:{self._local_server_port}/"))
 
     def stop_local_site(self) -> None:
-        if not self._local_server or self._local_server.poll() is not None:
+        if not self._local_server:
             return
-        self._local_server.terminate()
-        try:
-            self._local_server.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            self._local_server.kill()
+        self._local_server.shutdown()
+        self._local_server.server_close()
+        if self._local_server_thread:
+            self._local_server_thread.join(timeout=2)
         self._local_server = None
+        self._local_server_thread = None
         self._local_server_port = None
         self.set_local_site_button_state(False)
         self.statusBar().showMessage("האתר המקומי נעצר")
