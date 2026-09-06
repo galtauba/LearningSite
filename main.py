@@ -1,4 +1,7 @@
-"""PySide6 desktop Markdown editor."""
+"""PySide6 desktop Markdown editor.
+
+Copyright (c) 2026 Gal Tauba. All rights reserved.
+"""
 from __future__ import annotations
 
 import json
@@ -116,6 +119,7 @@ class CyberLearnEditor(QMainWindow):
         self.local_site_button = QPushButton("▶ תצוגת אתר"); self.local_site_button.setObjectName("subtle"); self.local_site_button.clicked.connect(self.toggle_local_site); header_layout.addWidget(self.local_site_button)
         settings = QPushButton("הגדרות אתר"); settings.setObjectName("subtle")
         settings_menu = QMenu(settings); site_text_action = settings_menu.addAction("טקסטים, פונטים וניווט"); site_text_action.triggered.connect(self.edit_site_texts); home_action = settings_menu.addAction("עמוד הבית"); home_action.triggered.connect(self.edit_homepage); icon_action = settings_menu.addAction("החלפת סמל אתר"); icon_action.triggered.connect(self.change_favicon); reset_icon_action = settings_menu.addAction("החזרת סמל האתר לברירת המחדל"); reset_icon_action.triggered.connect(self.reset_favicon); settings.setMenu(settings_menu); header_layout.addWidget(settings)
+        about = QPushButton("אודות"); about.setObjectName("subtle"); about.clicked.connect(self.show_about); header_layout.addWidget(about)
         button = QPushButton("✓ בדיקה"); button.setObjectName("subtle"); button.clicked.connect(self.validate_site); header_layout.addWidget(button)
         button = QPushButton("↻"); button.setObjectName("subtle"); button.setToolTip("רענון עץ התוכן"); button.clicked.connect(self.refresh_with_guard); header_layout.addWidget(button); outer.addWidget(header)
         splitter = QSplitter(Qt.Horizontal); splitter.setLayoutDirection(Qt.RightToLeft)
@@ -163,9 +167,14 @@ class CyberLearnEditor(QMainWindow):
             button.clicked.connect(callback); actions.addWidget(button)
             if label == "גזור": actions.addStretch()
         layout.addLayout(actions); splitter.addWidget(edit); splitter.setSizes([300, 1030]); outer.addWidget(splitter, 1)
+        copyright_label = QLabel("© 2026 גל טאובה · כל הזכויות שמורות")
+        copyright_label.setObjectName("muted"); copyright_label.setAlignment(Qt.AlignCenter); outer.addWidget(copyright_label)
         self.setCentralWidget(root); self.setStatusBar(QStatusBar()); self.statusBar().showMessage("בחרו עמוד או צרו עמוד חדש")
         for label, callback, shortcut in [("שמירה", self.save_page, "Ctrl+S"), ("עמוד חדש", self.new_page, "Ctrl+N"), ("מודגש", lambda: self.wrap("**", "**"), "Ctrl+B"), ("נטוי", lambda: self.wrap("*", "*"), "Ctrl+I"), ("קישור", self.insert_link, "Ctrl+K"), ("קוד פנימי", lambda: self.wrap("`", "`"), "Ctrl+`"), ("פתח/עצור אתר מקומי", self.toggle_local_site, "Ctrl+P"), ("חיפוש", self.focus_tree, "Ctrl+F")]:
             action = QAction(label, self); action.setShortcut(shortcut); action.triggered.connect(callback); self.addAction(action)
+
+    def show_about(self) -> None:
+        QMessageBox.about(self, "אודות", "עורך התוכן LearningSite\n\n© 2026 גל טאובה\nכל הזכויות שמורות.")
 
     def read_editor_font_size(self) -> int:
         try:

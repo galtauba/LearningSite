@@ -1,4 +1,7 @@
-"""Index-first content storage for the LearningSite editor."""
+"""Index-first content storage for the LearningSite editor.
+
+Copyright (c) 2026 Gal Tauba. All rights reserved.
+"""
 from __future__ import annotations
 
 import json
